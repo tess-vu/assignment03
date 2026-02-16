@@ -4,13 +4,9 @@
 
 ## Motivation
 
-Imagine you work for an environmental health organization that wants to build an interactive tool for residents and policymakers to explore **air quality patterns across the United States**. Think of something like [Windy](https://www.windy.com/) or [AirNow](https://www.airnow.gov/), but backed by historical monitoring data so users can ask questions like:
+Air quality data powers a wide range of **recurring, real-world decisions** — from a parent checking whether it's safe for their child to play outside, to a public health official deciding whether to issue an air quality advisory, to an urban planner evaluating a proposed zoning change near an industrial corridor. These aren't one-time research questions; they're operational decisions that people make again and again, where having current data changes the action they take. (See [MOTIVATION.md](MOTIVATION.md) for detailed examples.)
 
-- _Which neighborhoods have historically had the worst air quality?_
-- _How did air quality change during wildfire season?_
-- _Are there monitoring gaps in environmental justice communities?_
-
-To build this kind of data product, someone needs to take the raw monitoring data — published by the EPA as bulk CSV files — and prepare it for use in a cloud data warehouse. That's what you'll practice in this assignment: the **Extract** and **Load** portions of an EtLT data pipeline.
+Tools like [AirNow](https://www.airnow.gov/) and [Windy](https://www.windy.com/) serve these decisions — but behind every data product like these is a **data pipeline** that takes raw source data and prepares it for querying, mapping, and action. The EPA publishes air quality monitoring data as bulk CSV files. To make it useful, someone has to extract those files, convert them into efficient formats, load them into cloud storage, and make them queryable in a data warehouse. That's the **Extract** and **Load** portions of an EtLT pipeline — and that's what you'll practice in this assignment.
 
 ## Learning Objectives
 
