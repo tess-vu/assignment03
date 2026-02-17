@@ -1,3 +1,2 @@
-data/raw/*
-data/prepared/*
+data/*
 !data/.gitkeep
