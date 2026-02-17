@@ -1,13 +1,14 @@
 # Assignment 03
 
-**Complete by March 5, 2026**
+**Complete by March 18, 2026**
 
 ## Motivation
 
 Air quality data powers a wide range of **recurring, real-world decisions** — from a parent checking whether it's safe for their child to play outside, to a public health official deciding whether to issue an air quality advisory, to an urban planner evaluating a proposed zoning change near an industrial corridor. These aren't one-time research questions; they're operational decisions that people make again and again, where having current data changes the action they take. (See [MOTIVATION.md](MOTIVATION.md) for detailed examples and a discussion of how to choose the right data source for different use cases.)
 
-Tools like [AirNow](https://www.airnow.gov/) and [Windy](https://www.windy.com/) serve these decisions — but behind every data product like these is a **data pipeline** that takes raw source data and prepares it for querying, mapping, and action. In this assignment, you'll work with EPA's AirNow hourly monitoring data to practice the **Extract** and **Load** portions of an EtLT pipeline, with separate steps for downloading, transforming, and uploading data.
+Tools like [Windy](https://www.windy.com/) serve these decisions — but behind every data product like these is a **data pipeline** that takes raw source data and prepares it for querying, mapping, and action. In this assignment, you'll work with EPA's AirNow hourly monitoring data to practice the **Extract** and **Load** portions of an EtLT pipeline, with separate steps for downloading, transforming, and uploading data.
 
+<!--
 ## Learning Objectives
 
 - Understand what "the cloud" is and why it matters for data products
@@ -17,12 +18,13 @@ Tools like [AirNow](https://www.airnow.gov/) and [Windy](https://www.windy.com/)
 - Create a cloud storage bucket and upload files to it programmatically
 - Create BigQuery external tables — including tables backed by multiple files
 - Understand hive partitioning and when to join data in a pipeline vs. at query time
+-->
 
 ## Instructions
 
 1.  Fork this repository to your own account.
 2.  Clone your fork to your local machine.
-3.  Complete the parts below.
+3.  Complete the parts below. You can use the starter scripts provided in the `scripts` directory as a starting point. _Note that there are Python and JavaScript versions of the starter scripts provided, but you do not need to fill in both -- just pick a language and go with it._
 4.  Push your changes to your fork.
 5.  Submit a pull request to the original repository. Your pull request should have your name in the title (e.g. `Assignment 03 - Mjumbe Poe`).
 
@@ -216,7 +218,7 @@ Edit [`responses.md`](responses.md) to answer the following questions:
 1.  **File Sizes:** List the file size for each format you generated (for a single day's hourly data, and for the site locations). Which is the smallest? Which is the largest? Why do you think that is?
 2.  **Format Anatomy:** Pick any two of the formats you worked with (e.g., CSV vs. Parquet, or JSON-L vs. GeoParquet). Describe the general structure/anatomy of each and what makes them different.
 3.  **Choosing Formats for BigQuery:** Why is Parquet generally preferred over CSV or JSON-L for use with BigQuery external tables? Think about both _performance_ and _cost_.
-4.  **Pipeline vs. Warehouse Joins:** In this assignment, you kept the hourly observations and site locations as separate tables and joined them in BigQuery at query time. An alternative approach would be to join them during the Prepare step and produce a single denormalized file with coordinates included in every observation row. What are the trade-offs of each approach? When might you prefer one over the other?
+4.  **Pipeline vs. Warehouse Joins:** In this assignment, you kept the hourly observations and site locations as separate tables and joined them in BigQuery at query time. An alternative approach would be to join them during the Prepare step and produce a single "denormalized" file with coordinates included in every observation row. What are the trade-offs of each approach? When might you prefer one over the other?
 
     > **Stretch challenge:** Implement the alternative! Use the starter scripts `scripts/06_prepare.py` (or `.mjs`), `scripts/06_upload_to_gcs.py` (or `.mjs`), and `scripts/06_create_tables.sql` to:
     > - Write a new prepare script that joins hourly data with site locations during transformation
@@ -225,7 +227,7 @@ Edit [`responses.md`](responses.md) to answer the following questions:
     >
     > This is another backfill — you're re-processing the same raw data with a different transformation, without re-downloading anything.
 
-5.  **Choosing a Data Source:** Read the [MOTIVATION.md](MOTIVATION.md) document. For each of the following people, which air quality data source (AirNow hourly files, AirNow API, AQS bulk downloads, or AQS API) would you recommend they use to build their data product, and why?
+5.  **Choosing a Data Source:** Read the [MOTIVATION.md](MOTIVATION.md) document. For each of the following people (or "personas"), which air quality data source (AirNow hourly files, AirNow API, AQS bulk downloads, or AQS API) would you recommend someone use to build a data product for them, and why?
     1.  A parent who wants a dashboard showing current air quality near their child's school
-    2.  An environmental justice advocate identifying neighborhoods with chronically poor air quality over the past decade
+    2.  An environmental justice advocate identifying neighborhoods with chronically poor or worsening air quality over the past decade
     3.  A school administrator who needs automated morning alerts when AQI exceeds a threshold
