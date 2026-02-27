@@ -1,36 +1,40 @@
 """
-    Script to transform raw AirNow data files into BigQuery-compatible formats.
+Script to transform raw AirNow data files into BigQuery-compatible formats.
 
-    This script reads the raw .dat files downloaded by 01_extract.py and converts
-    them into CSV, JSON-L, and Parquet formats suitable for loading into
-    BigQuery as external tables.
+This script reads the raw .dat files downloaded by 01_extract.py and converts
+them into CSV, JSON-L, and Parquet formats suitable for loading into
+BigQuery as external tables.
 
-    Hourly observation data is converted to: CSV, JSON-L, Parquet
-    Site location data is converted to: CSV, JSON-L, GeoParquet (with point geometry)
+Hourly observation data is converted to: CSV, JSON-L, Parquet
+Site location data is converted to: CSV, JSON-L, GeoParquet (with point geometry)
 
-    Usage:
-        python scripts/02_prepare.py
+Usage:
+    python scripts/02_prepare.py
 """
 
 import pathlib
+import pyarrow
+import pandas as pd
+import geopandas as gpd
+import shapely
 
-
-DATA_DIR = pathlib.Path(__file__).parent.parent / 'data'
+DATA_DIR = pathlib.Path(__file__).parent.parent / "data"
 
 HOURLY_COLUMNS = [
-    'valid_date',
-    'valid_time',
-    'aqsid',
-    'site_name',
-    'gmt_offset',
-    'parameter_name',
-    'reporting_units',
-    'value',
-    'data_source',
+    "valid_date",
+    "valid_time",
+    "aqsid",
+    "site_name",
+    "gmt_offset",
+    "parameter_name",
+    "reporting_units",
+    "value",
+    "data_source",
 ]
 
 
 # --- Hourly observation data ---
+
 
 def prepare_hourly_csv(date_str):
     """Convert raw hourly .dat files for a date to a single CSV file.
@@ -42,7 +46,11 @@ def prepare_hourly_csv(date_str):
     Args:
         date_str: Date string in 'YYYY-MM-DD' format.
     """
-    raise NotImplementedError("Implement this function.")
+    (DATA_DIR / f"prepared/{date_str}").mkdir(parents=True, exist_ok=True)
+
+    filename = f"raw/{date_str}/HourlyData_{date_str.replace('-', '')}.dat"
+
+    pd.read_csv(sep="|", header=None, names=HOURLY_COLUMNS)
 
 
 def prepare_hourly_jsonl(date_str):
@@ -71,6 +79,7 @@ def prepare_hourly_parquet(date_str):
 
 
 # --- Site location data ---
+
 
 def prepare_site_locations_csv():
     """Convert monitoring site locations to CSV.
@@ -112,11 +121,11 @@ def prepare_site_locations_geoparquet():
     raise NotImplementedError("Implement this function.")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import datetime
 
     # Prepare site locations (only need to do this once)
-    print('Preparing site locations...')
+    print("Preparing site locations...")
     prepare_site_locations_csv()
     prepare_site_locations_jsonl()
     prepare_site_locations_geoparquet()
@@ -128,10 +137,10 @@ if __name__ == '__main__':
     current_date = start_date
     while current_date <= end_date:
         date_str = current_date.isoformat()
-        print(f'Preparing hourly data for {date_str}...')
+        print(f"Preparing hourly data for {date_str}...")
         prepare_hourly_csv(date_str)
         prepare_hourly_jsonl(date_str)
         prepare_hourly_parquet(date_str)
         current_date += datetime.timedelta(days=1)
 
-    print('Done.')
+    print("Done.")

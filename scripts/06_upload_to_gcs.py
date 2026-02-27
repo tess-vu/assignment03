@@ -1,24 +1,24 @@
 """
-    Stretch challenge: Upload merged hourly + site location data to GCS.
+Stretch challenge: Upload merged hourly + site location data to GCS.
 
-    This script uploads the denormalized (merged) files produced by
-    06_prepare.py to GCS with a hive-partitioned folder structure.
+This script uploads the denormalized (merged) files produced by
+06_prepare.py to GCS with a hive-partitioned folder structure.
 
-    Prerequisites:
-        - Run `gcloud auth application-default login` to authenticate.
-        - Part 6 prepare script (06_prepare.py) should be complete.
+Prerequisites:
+    - Run `gcloud auth application-default login` to authenticate.
+    - Part 6 prepare script (06_prepare.py) should be complete.
 
-    Usage:
-        python scripts/06_upload_to_gcs.py
+Usage:
+    python scripts/06_upload_to_gcs.py
 """
 
 import pathlib
 
 
-DATA_DIR = pathlib.Path(__file__).parent.parent / 'data'
+DATA_DIR = pathlib.Path(__file__).parent.parent / "data"
 
 # TODO: Update this to your bucket name
-BUCKET_NAME = 'musa5090-s26-yourname-data'
+BUCKET_NAME = "musa5090-s26-yourname-data"
 
 
 def upload_merged_data():
@@ -32,6 +32,6 @@ def upload_merged_data():
     raise NotImplementedError("Implement this function to upload merged data to GCS.")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     upload_merged_data()
-    print('Done.')
+    print("Done.")
