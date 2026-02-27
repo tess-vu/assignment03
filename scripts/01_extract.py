@@ -83,7 +83,6 @@ if __name__ == "__main__":
     print("data/raw/")
 
     while current_date <= end_date:
-        #print(f'Downloading data for {current_date}...')
         download_data_for_date(current_date.isoformat())
         current_date += datetime.timedelta(days = 1)
 
