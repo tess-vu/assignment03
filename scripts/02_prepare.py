@@ -32,6 +32,30 @@ HOURLY_COLUMNS = [
     "data_source",
 ]
 
+SITE_COLUMNS = [
+    "StationID",
+    "AQSID",
+    "FullAQSID",
+    "Parameter",
+    "MonitorType",
+    "SiteCode",
+    "SiteName",
+    "Status",
+    "AgencyID",
+    "AgencyName",
+    "EPARegion",
+    "Latitude",
+    "Longitude",
+    "Elevation",
+    "GMTOffset",
+    "CountryFIPS",
+    "CBSA_ID",
+    "CBSA_Name",
+    "StateAQSCode",
+    "StateAbbreviation",
+    "CountyAQSCode",
+    "CountyName"
+]
 
 # --- Hourly observation data ---
 
@@ -165,7 +189,7 @@ def prepare_hourly_parquet(date_str):
         combined_df = pd.concat(combined_list)
 
         # Write combined DataFrame to geoparquet.
-        combined_df.to_json(DATA_DIR / output_dir / f"{date_str}.parquet", index=False, orient="records", lines=True)
+        combined_df.to_parquet(DATA_DIR / output_dir / f"{date_str}.parquet", orient="records", lines=True)
         print(f"    {date_str}.parquet")
 
     except FileNotFoundError as e:
