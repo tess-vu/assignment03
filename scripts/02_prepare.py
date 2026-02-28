@@ -93,7 +93,41 @@ def prepare_hourly_jsonl(date_str):
     Args:
         date_str: Date string in 'YYYY-MM-DD' format.
     """
-    raise NotImplementedError("Implement this function.")
+    try:
+        # Create output directory.
+        (DATA_DIR / f"prepared/hourly").mkdir(parents=True, exist_ok=True)
+        output_dir = "prepared/hourly"
+
+        # Empty list for DataFrames.
+        combined_list = []
+
+        # Loop through hours 00-23.
+        for hour in range(24):
+            # Build full path to hourly .dat file.
+            filename = (
+                DATA_DIR
+                / f"raw/{date_str}/HourlyData_{date_str.replace('-', '')}{hour:02d}.dat"
+            )
+
+            # Read file into DataFrame.
+            hourly = pd.read_csv(filename, sep="|", header=None, names=HOURLY_COLUMNS)
+
+            # Append DataFrame to list.
+            combined_list.append(hourly)
+
+        # Combine all DataFrames.
+        combined_df = pd.concat(combined_list)
+
+        # Write combined DataFrame to jsonl.
+        combined_df.to_json(DATA_DIR / output_dir / f"{date_str}.jsonl", index=False, orient="records", lines=True)
+        print(f"    {date_str}.jsonl")
+
+    except FileNotFoundError as e:
+        print(f"File not found.\n{e}")
+    except pd.errors.EmptyDataError as e:
+        print(f"No data in file.\n{e}")
+    except PermissionError as e:
+        print(f"User doesn't have permissions.\n{e}")
 
 
 def prepare_hourly_parquet(date_str):
@@ -105,8 +139,41 @@ def prepare_hourly_parquet(date_str):
     Args:
         date_str: Date string in 'YYYY-MM-DD' format.
     """
-    raise NotImplementedError("Implement this function.")
+    try:
+        # Create output directory.
+        (DATA_DIR / f"prepared/hourly").mkdir(parents=True, exist_ok=True)
+        output_dir = "prepared/hourly"
 
+        # Empty list for DataFrames.
+        combined_list = []
+
+        # Loop through hours 00-23.
+        for hour in range(24):
+            # Build full path to hourly .dat file.
+            filename = (
+                DATA_DIR
+                / f"raw/{date_str}/HourlyData_{date_str.replace('-', '')}{hour:02d}.dat"
+            )
+
+            # Read file into DataFrame.
+            hourly = pd.read_csv(filename, sep="|", header=None, names=HOURLY_COLUMNS)
+
+            # Append DataFrame to list.
+            combined_list.append(hourly)
+
+        # Combine all DataFrames.
+        combined_df = pd.concat(combined_list)
+
+        # Write combined DataFrame to geoparquet.
+        combined_df.to_json(DATA_DIR / output_dir / f"{date_str}.parquet", index=False, orient="records", lines=True)
+        print(f"    {date_str}.parquet")
+
+    except FileNotFoundError as e:
+        print(f"File not found.\n{e}")
+    except pd.errors.EmptyDataError as e:
+        print(f"No data in file.\n{e}")
+    except PermissionError as e:
+        print(f"User doesn't have permissions.\n{e}")
 
 # --- Site location data ---
 
