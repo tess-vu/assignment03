@@ -46,11 +46,41 @@ def prepare_hourly_csv(date_str):
     Args:
         date_str: Date string in 'YYYY-MM-DD' format.
     """
-    (DATA_DIR / f"prepared/{date_str}").mkdir(parents=True, exist_ok=True)
+    try:
+        # Create output directory.
+        (DATA_DIR / f"prepared/hourly").mkdir(parents=True, exist_ok=True)
+        output_dir = "prepared/hourly"
 
-    filename = f"raw/{date_str}/HourlyData_{date_str.replace('-', '')}.dat"
+        # Empty list for DataFrames.
+        combined_list = []
 
-    pd.read_csv(sep="|", header=None, names=HOURLY_COLUMNS)
+        # Loop through hours 00-23.
+        for hour in range(24):
+            # Build full path to hourly .dat file.
+            filename = (
+                DATA_DIR
+                / f"raw/{date_str}/HourlyData_{date_str.replace('-', '')}{hour:02d}.dat"
+            )
+
+            # Read file into DataFrame.
+            hourly = pd.read_csv(filename, sep="|", header=None, names=HOURLY_COLUMNS)
+
+            # Append DataFrame to list.
+            combined_list.append(hourly)
+
+        # Combine all DataFrames.
+        combined_df = pd.concat(combined_list)
+
+        # Write combined DataFrame to CSV.
+        combined_df.to_csv(DATA_DIR / output_dir / f"{date_str}.csv", index=False)
+        print(f"    {date_str}.csv")
+
+    except FileNotFoundError as e:
+        print(f"File not found.\n{e}")
+    except pd.errors.EmptyDataError as e:
+        print(f"No data in file.\n{e}")
+    except PermissionError as e:
+        print(f"User doesn't have permissions.\n{e}")
 
 
 def prepare_hourly_jsonl(date_str):
@@ -137,10 +167,16 @@ if __name__ == "__main__":
     current_date = start_date
     while current_date <= end_date:
         date_str = current_date.isoformat()
-        print(f"Preparing hourly data for {date_str}...")
+
+        print("data/prepared/")
+        print("  hourly/")
+
         prepare_hourly_csv(date_str)
+
         prepare_hourly_jsonl(date_str)
+
         prepare_hourly_parquet(date_str)
+
         current_date += datetime.timedelta(days=1)
 
     print("Done.")

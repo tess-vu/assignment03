@@ -84,6 +84,8 @@ def download_data_for_date(date_str):
 if __name__ == "__main__":
     import datetime
 
+    print("Preparing to download...")
+
     # Download data for July 2024
     start_date = datetime.date(2024, 7, 1)
     end_date = datetime.date(2024, 7, 31)
