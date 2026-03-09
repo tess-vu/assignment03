@@ -32,31 +32,6 @@ HOURLY_COLUMNS = [
     "data_source",
 ]
 
-SITE_COLUMNS = [
-    "StationID",
-    "AQSID",
-    "FullAQSID",
-    "Parameter",
-    "MonitorType",
-    "SiteCode",
-    "SiteName",
-    "Status",
-    "AgencyID",
-    "AgencyName",
-    "EPARegion",
-    "Latitude",
-    "Longitude",
-    "Elevation",
-    "GMTOffset",
-    "CountryFIPS",
-    "CBSA_ID",
-    "CBSA_Name",
-    "StateAQSCode",
-    "StateAbbreviation",
-    "CountyAQSCode",
-    "CountyName"
-]
-
 # --- Hourly observation data ---
 
 
@@ -87,7 +62,7 @@ def prepare_hourly_csv(date_str):
             )
 
             # Read file into DataFrame.
-            hourly = pd.read_csv(filename, sep="|", header=None, names=HOURLY_COLUMNS)
+            hourly = pd.read_csv(filename, sep="|", header=None, names=HOURLY_COLUMNS, encoding="latin-1")
 
             # Append DataFrame to list.
             combined_list.append(hourly)
@@ -134,7 +109,7 @@ def prepare_hourly_jsonl(date_str):
             )
 
             # Read file into DataFrame.
-            hourly = pd.read_csv(filename, sep="|", header=None, names=HOURLY_COLUMNS)
+            hourly = pd.read_csv(filename, sep="|", header=None, names=HOURLY_COLUMNS, encoding="latin-1")
 
             # Append DataFrame to list.
             combined_list.append(hourly)
@@ -143,7 +118,7 @@ def prepare_hourly_jsonl(date_str):
         combined_df = pd.concat(combined_list)
 
         # Write combined DataFrame to jsonl.
-        combined_df.to_json(DATA_DIR / output_dir / f"{date_str}.jsonl", index=False, orient="records", lines=True)
+        combined_df.to_json(DATA_DIR / output_dir / f"{date_str}.jsonl", orient="records", lines=True)
         print(f"    {date_str}.jsonl")
 
     except FileNotFoundError as e:
@@ -180,7 +155,7 @@ def prepare_hourly_parquet(date_str):
             )
 
             # Read file into DataFrame.
-            hourly = pd.read_csv(filename, sep="|", header=None, names=HOURLY_COLUMNS)
+            hourly = pd.read_csv(filename, sep="|", header=None, names=HOURLY_COLUMNS, encoding="latin-1")
 
             # Append DataFrame to list.
             combined_list.append(hourly)
@@ -188,8 +163,8 @@ def prepare_hourly_parquet(date_str):
         # Combine all DataFrames.
         combined_df = pd.concat(combined_list)
 
-        # Write combined DataFrame to geoparquet.
-        combined_df.to_parquet(DATA_DIR / output_dir / f"{date_str}.parquet", orient="records", lines=True)
+        # Write combined DataFrame to parquet.
+        combined_df.to_parquet(DATA_DIR / output_dir / f"{date_str}.parquet", index=False)
         print(f"    {date_str}.parquet")
 
     except FileNotFoundError as e:
@@ -212,7 +187,31 @@ def prepare_site_locations_csv():
 
     Use the most recent date's file from data/raw/.
     """
-    raise NotImplementedError("Implement this function.")
+    try:
+        # Create output directory.
+        (DATA_DIR / "prepared/sites").mkdir(parents=True, exist_ok=True)
+
+        # Find most recent date folder.
+        raw_folders = [f for f in (DATA_DIR / "raw").iterdir() if f.is_dir()]
+        most_recent = sorted(raw_folders)[-1]
+
+        # Read file.
+        filepath = most_recent / "Monitoring_Site_Locations_V2.dat"
+        sites_df = pd.read_csv(filepath, sep="|", encoding="latin-1")
+
+        # Deduplicate.
+        sites_df = sites_df.drop_duplicates(subset=["AQSID"])
+
+        # Write to csv file.
+        sites_df.to_csv(DATA_DIR / "prepared/sites/site_locations.csv", index=False)
+        print("    site_locations.csv")
+
+    except FileNotFoundError as e:
+        print(f"File not found.\n{e}")
+    except pd.errors.EmptyDataError as e:
+        print(f"No data in file.\n{e}")
+    except PermissionError as e:
+        print(f"User doesn't have permissions.\n{e}")
 
 
 def prepare_site_locations_jsonl():
@@ -225,7 +224,31 @@ def prepare_site_locations_jsonl():
 
     Use the most recent date's file from data/raw/.
     """
-    raise NotImplementedError("Implement this function.")
+    try:
+        # Create output directory.
+        (DATA_DIR / "prepared/sites").mkdir(parents=True, exist_ok=True)
+
+        # Find most recent date folder.
+        raw_folders = [f for f in (DATA_DIR / "raw").iterdir() if f.is_dir()]
+        most_recent = sorted(raw_folders)[-1]
+
+        # Read file.
+        filepath = most_recent / "Monitoring_Site_Locations_V2.dat"
+        sites_df = pd.read_csv(filepath, sep="|", encoding="latin-1")
+
+        # Deduplicate.
+        sites_df = sites_df.drop_duplicates(subset=["AQSID"])
+
+        # Write to jsonl file.
+        sites_df.to_json(DATA_DIR / "prepared/sites/site_locations.jsonl", orient="records", lines=True)
+        print("    site_locations.jsonl")
+
+    except FileNotFoundError as e:
+        print(f"File not found.\n{e}")
+    except pd.errors.EmptyDataError as e:
+        print(f"No data in file.\n{e}")
+    except PermissionError as e:
+        print(f"User doesn't have permissions.\n{e}")
 
 
 def prepare_site_locations_geoparquet():
@@ -239,17 +262,51 @@ def prepare_site_locations_geoparquet():
 
     Use the most recent date's file from data/raw/.
     """
-    raise NotImplementedError("Implement this function.")
+    try:
+        # Create output directory.
+        (DATA_DIR / "prepared/sites").mkdir(parents=True, exist_ok=True)
+
+        # Find most recent date folder.
+        raw_folders = [f for f in (DATA_DIR / "raw").iterdir() if f.is_dir()]
+        most_recent = sorted(raw_folders)[-1]
+
+        # Read file.
+        filepath = most_recent / "Monitoring_Site_Locations_V2.dat"
+        sites_df = pd.read_csv(filepath, sep="|", encoding="latin-1")
+
+        # Deduplicate.
+        sites_df = sites_df.drop_duplicates(subset=["AQSID"])
+
+        # Create geometry for geodataframe.
+        geometry = gpd.points_from_xy(sites_df["Longitude"], sites_df["Latitude"])
+
+        # Convert to geodataframe.
+        sites_gdf = gpd.GeoDataFrame(sites_df, geometry=geometry, crs="EPSG:4326")
+
+        # Write to parquet file.
+        sites_gdf.to_parquet(DATA_DIR / "prepared/sites/site_locations.geoparquet", index=False)
+        print("    site_locations.geoparquet")
+
+    except FileNotFoundError as e:
+        print(f"File not found.\n{e}")
+    except pd.errors.EmptyDataError as e:
+        print(f"No data in file.\n{e}")
+    except PermissionError as e:
+        print(f"User doesn't have permissions.\n{e}")
 
 
 if __name__ == "__main__":
     import datetime
 
+    print("data/prepared/")
+
     # Prepare site locations (only need to do this once)
-    print("Preparing site locations...")
+    print("  sites/")
     prepare_site_locations_csv()
     prepare_site_locations_jsonl()
     prepare_site_locations_geoparquet()
+
+    print("  hourly/")
 
     # Prepare hourly data for each day in July 2024 (backfill)
     start_date = datetime.date(2024, 7, 1)
@@ -258,9 +315,6 @@ if __name__ == "__main__":
     current_date = start_date
     while current_date <= end_date:
         date_str = current_date.isoformat()
-
-        print("data/prepared/")
-        print("  hourly/")
 
         prepare_hourly_csv(date_str)
 
