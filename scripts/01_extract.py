@@ -72,7 +72,7 @@ def download_data_for_date(date_str):
                 DATA_DIR / f"raw/{date_str}/Monitoring_Site_Locations_V2.dat", "wb"
             ) as f:
                 f.write(response.content)
-                print(f"    Monitoring_Site_Locations_V2.dat")
+                print("    Monitoring_Site_Locations_V2.dat")
         else:
             print(f"Failed: {site_locations_url}")
     except requests.ConnectTimeout as e:

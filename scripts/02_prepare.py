@@ -13,10 +13,8 @@ Usage:
 """
 
 import pathlib
-import pyarrow
 import pandas as pd
 import geopandas as gpd
-import shapely
 
 DATA_DIR = pathlib.Path(__file__).parent.parent / "data"
 
@@ -47,7 +45,7 @@ def prepare_hourly_csv(date_str):
     """
     try:
         # Create output directory.
-        (DATA_DIR / f"prepared/hourly").mkdir(parents=True, exist_ok=True)
+        (DATA_DIR / "prepared/hourly").mkdir(parents=True, exist_ok=True)
         output_dir = "prepared/hourly"
 
         # Empty list for DataFrames.
@@ -62,7 +60,9 @@ def prepare_hourly_csv(date_str):
             )
 
             # Read file into DataFrame.
-            hourly = pd.read_csv(filename, sep="|", header=None, names=HOURLY_COLUMNS, encoding="latin-1")
+            hourly = pd.read_csv(
+                filename, sep="|", header=None, names=HOURLY_COLUMNS, encoding="latin-1"
+            )
 
             # Append DataFrame to list.
             combined_list.append(hourly)
@@ -94,7 +94,7 @@ def prepare_hourly_jsonl(date_str):
     """
     try:
         # Create output directory.
-        (DATA_DIR / f"prepared/hourly").mkdir(parents=True, exist_ok=True)
+        (DATA_DIR / "prepared/hourly").mkdir(parents=True, exist_ok=True)
         output_dir = "prepared/hourly"
 
         # Empty list for DataFrames.
@@ -109,7 +109,9 @@ def prepare_hourly_jsonl(date_str):
             )
 
             # Read file into DataFrame.
-            hourly = pd.read_csv(filename, sep="|", header=None, names=HOURLY_COLUMNS, encoding="latin-1")
+            hourly = pd.read_csv(
+                filename, sep="|", header=None, names=HOURLY_COLUMNS, encoding="latin-1"
+            )
 
             # Append DataFrame to list.
             combined_list.append(hourly)
@@ -118,7 +120,9 @@ def prepare_hourly_jsonl(date_str):
         combined_df = pd.concat(combined_list)
 
         # Write combined DataFrame to jsonl.
-        combined_df.to_json(DATA_DIR / output_dir / f"{date_str}.jsonl", orient="records", lines=True)
+        combined_df.to_json(
+            DATA_DIR / output_dir / f"{date_str}.jsonl", orient="records", lines=True
+        )
         print(f"    {date_str}.jsonl")
 
     except FileNotFoundError as e:
@@ -140,7 +144,7 @@ def prepare_hourly_parquet(date_str):
     """
     try:
         # Create output directory.
-        (DATA_DIR / f"prepared/hourly").mkdir(parents=True, exist_ok=True)
+        (DATA_DIR / "prepared/hourly").mkdir(parents=True, exist_ok=True)
         output_dir = "prepared/hourly"
 
         # Empty list for DataFrames.
@@ -155,7 +159,9 @@ def prepare_hourly_parquet(date_str):
             )
 
             # Read file into DataFrame.
-            hourly = pd.read_csv(filename, sep="|", header=None, names=HOURLY_COLUMNS, encoding="latin-1")
+            hourly = pd.read_csv(
+                filename, sep="|", header=None, names=HOURLY_COLUMNS, encoding="latin-1"
+            )
 
             # Append DataFrame to list.
             combined_list.append(hourly)
@@ -164,7 +170,9 @@ def prepare_hourly_parquet(date_str):
         combined_df = pd.concat(combined_list)
 
         # Write combined DataFrame to parquet.
-        combined_df.to_parquet(DATA_DIR / output_dir / f"{date_str}.parquet", index=False)
+        combined_df.to_parquet(
+            DATA_DIR / output_dir / f"{date_str}.parquet", index=False
+        )
         print(f"    {date_str}.parquet")
 
     except FileNotFoundError as e:
@@ -173,6 +181,7 @@ def prepare_hourly_parquet(date_str):
         print(f"No data in file.\n{e}")
     except PermissionError as e:
         print(f"User doesn't have permissions.\n{e}")
+
 
 # --- Site location data ---
 
@@ -240,7 +249,11 @@ def prepare_site_locations_jsonl():
         sites_df = sites_df.drop_duplicates(subset=["AQSID"])
 
         # Write to jsonl file.
-        sites_df.to_json(DATA_DIR / "prepared/sites/site_locations.jsonl", orient="records", lines=True)
+        sites_df.to_json(
+            DATA_DIR / "prepared/sites/site_locations.jsonl",
+            orient="records",
+            lines=True,
+        )
         print("    site_locations.jsonl")
 
     except FileNotFoundError as e:
@@ -284,7 +297,9 @@ def prepare_site_locations_geoparquet():
         sites_gdf = gpd.GeoDataFrame(sites_df, geometry=geometry, crs="EPSG:4326")
 
         # Write to parquet file.
-        sites_gdf.to_parquet(DATA_DIR / "prepared/sites/site_locations.geoparquet", index=False)
+        sites_gdf.to_parquet(
+            DATA_DIR / "prepared/sites/site_locations.geoparquet", index=False
+        )
         print("    site_locations.geoparquet")
 
     except FileNotFoundError as e:

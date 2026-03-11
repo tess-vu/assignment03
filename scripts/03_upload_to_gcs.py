@@ -27,6 +27,7 @@ DATA_DIR = pathlib.Path(__file__).parent.parent / "data"
 
 BUCKET_NAME = os.getenv("DATA_LAKE_BUCKET")
 
+
 def upload_prepared_data():
     """Upload all prepared data files to GCS.
 
@@ -53,9 +54,8 @@ def upload_prepared_data():
         prepared_dir = DATA_DIR / "prepared"
 
         # Loop through all files recursively.
-        
-        for filepath in prepared_dir.rglob("*"):
 
+        for filepath in prepared_dir.rglob("*"):
             # Skip if not a file.
             if not filepath.is_file():
                 continue
@@ -65,20 +65,21 @@ def upload_prepared_data():
 
             # Construct GCS destination path with air_quality/ prefix.
             gcs_path = f"air_quality/{relative_path}"
-        
+
             # Create blob and upload.
             blob = bucket.blob(gcs_path)
             blob.upload_from_filename(str(filepath))
-        
+
             # Print progress.
             print(f"Uploading: {gcs_path}")
-    
+
     except gcs_exceptions.NotFound as e:
         print(f"Bucket does not exist.\n{e}")
     except auth_exceptions.DefaultCredentialsError as e:
         print(f"Authentication failed. Check credentials.\n{e}")
     except api_exceptions.GoogleAPIError as e:
         print(f"Network error.\n{e}")
+
 
 if __name__ == "__main__":
     upload_prepared_data()
