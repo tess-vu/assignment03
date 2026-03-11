@@ -14,16 +14,60 @@
 -- TODO: Create external table `hourly_observations_csv_hive`
 -- pointing to gs://<your-bucket>/air_quality/hourly/csv/*
 -- with hive partitioning options
-
+create or replace external table air_quality.hourly_observations_csv_hive
+with partition columns (
+    airnow_date date
+)
+options (
+    format = 'CSV',
+    uris = [
+        'gs://musa5090-s26-tvu-data-lake/air_quality/hourly/csv/*'
+    ],
+    hive_partition_uri_prefix
+    = 'gs://musa5090-s26-tvu-data-lake/air_quality/hourly/csv/',
+    skip_leading_rows = 1
+);
 
 -- Hourly Observations — JSON-L (hive-partitioned)
 -- TODO: Create external table `hourly_observations_jsonl_hive`
 -- pointing to gs://<your-bucket>/air_quality/hourly/jsonl/*
 -- with hive partitioning options
-
+create or replace external table air_quality.hourly_observations_jsonl_hive
+with partition columns (
+    airnow_date date
+)
+options (
+    format = 'JSON',
+    uris = [
+        'gs://musa5090-s26-tvu-data-lake/air_quality/hourly/jsonl/*'
+    ],
+    hive_partition_uri_prefix
+    = 'gs://musa5090-s26-tvu-data-lake/air_quality/hourly/jsonl/'
+);
 
 -- Hourly Observations — Parquet (hive-partitioned)
 -- TODO: Create external table `hourly_observations_parquet_hive`
 -- pointing to gs://<your-bucket>/air_quality/hourly/parquet/*
 -- with hive partitioning options
+create or replace external table air_quality.hourly_observations_parquet_hive
+with partition columns (
+    airnow_date date
+)
+options (
+    format = 'PARQUET',
+    uris = [
+        'gs://musa5090-s26-tvu-data-lake/air_quality/hourly/parquet/*'
+    ],
+    hive_partition_uri_prefix
+    = 'gs://musa5090-s26-tvu-data-lake/air_quality/hourly/parquet/'
+);
 
+-- Check partition column.
+select distinct airnow_date
+from air_quality.hourly_observations_parquet_hive
+order by airnow_date;
+
+-- Test partition pruning.
+select count(*)
+from air_quality.hourly_observations_parquet_hive
+where airnow_date = '2024-07-04';

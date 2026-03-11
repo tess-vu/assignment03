@@ -60,20 +60,25 @@ def upload_with_hive_partitioning():
         bucket = storage_client.bucket(BUCKET_NAME)
 
         # Define prepared directory path.
-        prepared_dir = DATA_DIR / "prepared"
+        hourly_dir = DATA_DIR / "prepared" / "hourly"
 
         # Loop through all files recursively.
-
-        for filepath in prepared_dir.rglob("*"):
+        for filepath in hourly_dir.rglob("*"):
             # Skip if not a file.
             if not filepath.is_file():
                 continue
 
-            # Calculate relative path from prepared directory.
-            relative_path = filepath.relative_to(prepared_dir).as_posix()
+            # Get date portion "YYYY-MM-DD".
+            date_str = filepath.stem
 
-            # Construct GCS destination path with air_quality/ prefix.
-            gcs_path = f"air_quality/{relative_path}"
+            # Get ".csv" suffix.
+            extension = filepath.suffix
+
+            # Remove dot for "csv".
+            format_folder = extension[1:]
+
+            # Construct hive-partitioned GCS path.
+            gcs_path = f"air_quality/hourly/{format_folder}/airnow_date={date_str}/data{extension}"
 
             # Create blob and upload.
             blob = bucket.blob(gcs_path)

@@ -54,7 +54,6 @@ def upload_prepared_data():
         prepared_dir = DATA_DIR / "prepared"
 
         # Loop through all files recursively.
-
         for filepath in prepared_dir.rglob("*"):
             # Skip if not a file.
             if not filepath.is_file():
